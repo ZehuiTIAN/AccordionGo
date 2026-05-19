@@ -1,0 +1,138 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #0f0f1a;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.home {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 64px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.appName {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c6ff7, #FFD700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  color: #888;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.courseCard {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.courseDifficulty { color: #FFD700; font-size: 14px; }
+
+.courseTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+.courseDesc { color: #888; font-size: 14px; }
+
+.levelButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.levelBtn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.levelBtn:hover { transform: translateY(-2px); }
+.levelBtn:active { transform: translateY(0); opacity: 0.8; }
+
+.levelBtn.demo {
+  background: linear-gradient(135deg, #2a2a4a, #3a3a6a);
+  color: #9988ff;
+  border: 1px solid #4a4a8a;
+}
+
+.levelBtn.guided {
+  background: linear-gradient(135deg, #7c6ff7, #5a4fcf);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(124, 111, 247, 0.3);
+}
+
+.comingSoon {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.comingSoonCard {
+  background: #111122;
+  border: 1px dashed #2a2a4a;
+  border-radius: 12px;
+  padding: 14px 20px;
+  color: #555;
+  font-size: 15px;
+}
+
+.comingSoonCard span {
+  float: right;
+  font-size: 12px;
+  background: #1a1a2e;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #666;
+}
+
+.footer {
+  text-align: center;
+  color: #333;
+  font-size: 12px;
+}

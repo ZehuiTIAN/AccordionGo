@@ -1,0 +1,8 @@
+{
+  "name": "accordion-app",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @accordion/web dev",
+    "build": "pnpm --filter @accordion/core build && pnpm --filter @accordion/web build"
+  }
+}

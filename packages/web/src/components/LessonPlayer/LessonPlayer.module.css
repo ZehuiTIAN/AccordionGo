@@ -1,0 +1,130 @@
+.player {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  min-height: 100vh;
+  background: #0f0f1a;
+  transition: background 0.1s;
+}
+
+.wrongFlash {
+  background: #2a0a0a;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backBtn {
+  background: none;
+  border: 1px solid #444;
+  color: #aaa;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.backBtn:hover { border-color: #888; color: #fff; }
+
+.title {
+  flex: 1;
+  margin: 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.modeTag {
+  background: #2a2a4a;
+  color: #9988ff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.progressBar {
+  height: 4px;
+  background: #2a2a4a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c6ff7, #FFD700);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.lyricArea {
+  text-align: center;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lyric {
+  font-size: 36px;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.waitingHint {
+  text-align: center;
+  color: #7c6ff7;
+  font-size: 14px;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.keyboard {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.startBtn {
+  background: linear-gradient(135deg, #7c6ff7, #5a4fcf);
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(124, 111, 247, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.startBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(124, 111, 247, 0.6);
+}
+
+.stopBtn {
+  background: none;
+  color: #888;
+  border: 1px solid #444;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.stopBtn:hover { border-color: #888; color: #fff; }
