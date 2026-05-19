@@ -5,9 +5,10 @@
  *
  * 右手（treble）：C3–C5，共 25 键（15 白键 + 10 黑键）
  * 左手（bass）：8 个按钮，2 列 × 4 行，Stradella 系统
- *   - 第 0 列（外侧）：F / C / G / D 单音根音
- *   - 第 1 列（内侧）：F / C / G / D 大三和弦（stagger 错位 30px）
+ *   - 第 0 列（外侧）：D / G / C / F 单音根音（从上到下）
+ *   - 第 1 列（内侧）：D / G / C / F 大三和弦（stagger 错位 30px）
  *
+ * 行顺序遵循中国手风琴教学惯例：升号调在上，降号调在下。
  * 换品牌时替换 visual 字段；加新琴型时新建此文件并导出新的 AccordionConfig。
  */
 
@@ -52,14 +53,15 @@ function buildTrebleKeys(): TrebleKey[] {
   return keys;
 }
 
-// 8-bass Stradella: 2 cols (bass notes + major chords) × 4 rows (F, C, G, D)
-// Circle of fifths order: F → C → G → D
+// 8-bass Stradella: 2 cols (bass notes + major chords) × 4 rows (D, G, C, F)
+// Top→bottom: D(2 sharps) → G(1 sharp) → C(no accidentals) → F(1 flat)
+// Matches Chinese accordion pedagogical convention (sharps at top, flats at bottom).
 function buildBassButtons(): BassButton[] {
   const roots = [
-    { note: 'F', bassMidi: 53, chordMidi: [41, 45, 48] },  // F3 bass; F2 A2 C3 chord
-    { note: 'C', bassMidi: 48, chordMidi: [36, 40, 43] },  // C3 bass; C2 E2 G2 chord
-    { note: 'G', bassMidi: 55, chordMidi: [43, 47, 50] },  // G3 bass; G2 B2 D3 chord
-    { note: 'D', bassMidi: 50, chordMidi: [38, 42, 45] },  // D3 bass; D2 F#2 A2 chord
+    { note: 'D', bassMidi: 50, chordMidi: [38, 42, 45] },  // row 0 (top);  D3 bass; D2 F#2 A2 chord
+    { note: 'G', bassMidi: 55, chordMidi: [43, 47, 50] },  // row 1;        G3 bass; G2 B2 D3 chord
+    { note: 'C', bassMidi: 48, chordMidi: [36, 40, 43] },  // row 2;        C3 bass; C2 E2 G2 chord
+    { note: 'F', bassMidi: 53, chordMidi: [41, 45, 48] },  // row 3 (bottom); F3 bass; F2 A2 C3 chord
   ];
 
   const buttons: BassButton[] = [];

@@ -9,6 +9,7 @@
  *   wrongFlash  — 答错时全屏红闪
  *   lyric       — 当前事件的歌词
  *   progress    — 进度条百分比（0–100）
+ *   mirrored    — 手风琴视角切换（演奏者视角 / 观众视角）
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -41,6 +42,7 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
   const [lyric, setLyric]       = useState('');
   const [progress, setProgress] = useState(0);
   const [wrongFlash, setWrongFlash] = useState(false);
+  const [mirrored, setMirrored] = useState(false);
 
   useEffect(() => {
     const engine = engineRef.current;
@@ -131,11 +133,20 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
       {isWaiting && <div className={styles.waitingHint}>等待你的按键…</div>}
 
       <div className={styles.keyboard}>
+        <div className={styles.viewToggleRow}>
+          <button
+            className={styles.viewToggleBtn}
+            onClick={() => setMirrored(m => !m)}
+          >
+            {mirrored ? '演奏者视角 ↔' : '观众视角 ↔'}
+          </button>
+        </div>
         <AccordionView
           config={pianoAccordionConfig}
           activeKeys={activeKeys}
           pressedKeys={pressedKeys}
           onKeyPress={handleKeyPress}
+          mirrored={mirrored}
         />
       </div>
 
