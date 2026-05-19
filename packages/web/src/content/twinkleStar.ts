@@ -1,3 +1,14 @@
+/**
+ * content/twinkleStar.ts
+ *
+ * 内置曲目：《小星星》（Twinkle Twinkle Little Star）
+ *
+ * 直接以 TypeScript 常量形式内嵌，无需走 MusicXML 解析流程。
+ * 包含两个关卡：demo（自动演示）和 guided（跟练）。
+ *
+ * 新增内置曲目参考此文件格式；大批量曲目请改用 content/songs/ + build-songs.ts 流程。
+ */
+
 import type { Course } from '@accordion/core';
 
 // Twinkle Twinkle Little Star in C major, BPM=90

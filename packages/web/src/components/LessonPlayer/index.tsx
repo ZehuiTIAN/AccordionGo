@@ -1,3 +1,16 @@
+/**
+ * components/LessonPlayer/index.tsx
+ *
+ * 关卡播放页。持有 LessonEngine 和 WebAudioEngine 实例，将引擎回调桥接到 React state。
+ *
+ * 状态：
+ *   status      — 来自 LessonEngine 的引擎状态（当前事件、高亮键等）
+ *   pressedKeys — 用户实际触发或演示模式自动触发的按键视觉反馈（短暂高亮）
+ *   wrongFlash  — 答错时全屏红闪
+ *   lyric       — 当前事件的歌词
+ *   progress    — 进度条百分比（0–100）
+ */
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Level, EngineStatus } from '@accordion/core';
 import { LessonEngine } from '@accordion/core';
@@ -13,8 +26,11 @@ interface Props {
 }
 
 export function LessonPlayer({ level, onBack, onFinish }: Props) {
-  const engineRef = useRef(new LessonEngine());
-  const audioRef = useRef(new WebAudioEngine());
+  const engineRef      = useRef(new LessonEngine());
+  const audioRef       = useRef(new WebAudioEngine());
+  const wrongFlashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pressedTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [status, setStatus] = useState<EngineStatus>({
     state: 'idle',
     currentEventIndex: 0,
@@ -22,13 +38,13 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
     activeKeys: new Set(),
   });
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
-  const [lyric, setLyric] = useState('');
+  const [lyric, setLyric]       = useState('');
   const [progress, setProgress] = useState(0);
   const [wrongFlash, setWrongFlash] = useState(false);
 
   useEffect(() => {
     const engine = engineRef.current;
-    const audio = audioRef.current;
+    const audio  = audioRef.current;
 
     engine.onPlayNote = (event) => {
       if (event.notes) {
@@ -37,10 +53,10 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
         } else {
           audio.playChord(event.notes.midi, event.notes!.duration);
         }
-        // Flash pressed keys briefly in demo mode
         if (level.mode === 'demo') {
+          if (pressedTimer.current) clearTimeout(pressedTimer.current);
           setPressedKeys(new Set(event.notes.keys));
-          setTimeout(() => setPressedKeys(new Set()), event.notes.duration * 0.8);
+          pressedTimer.current = setTimeout(() => setPressedKeys(new Set()), event.notes.duration * 0.8);
         }
       }
       if (event.lyric) setLyric(event.lyric);
@@ -48,11 +64,11 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
 
     const unsub = engine.subscribe((s) => {
       setStatus(s);
-      const total = level.events.length;
-      setProgress(total > 0 ? (s.currentEventIndex / total) * 100 : 0);
+      setProgress(level.events.length > 0 ? (s.currentEventIndex / level.events.length) * 100 : 0);
       if (s.state === 'wrong') {
+        if (wrongFlashTimer.current) clearTimeout(wrongFlashTimer.current);
         setWrongFlash(true);
-        setTimeout(() => setWrongFlash(false), 600);
+        wrongFlashTimer.current = setTimeout(() => setWrongFlash(false), 600);
       }
       if (s.state === 'finished') {
         setLyric('🎉 完成！');
@@ -64,6 +80,8 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
     return () => {
       engine.stop();
       unsub();
+      if (wrongFlashTimer.current) clearTimeout(wrongFlashTimer.current);
+      if (pressedTimer.current)    clearTimeout(pressedTimer.current);
     };
   }, [level, onFinish]);
 
@@ -73,23 +91,26 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
   }, []);
 
   const handleKeyPress = useCallback((keyId: string, midis: number[]) => {
-    const engine = engineRef.current;
-    const audio = audioRef.current;
+    midis.forEach(m => audioRef.current.playNote(m, 400));
 
-    // Always play sound on tap
-    midis.forEach(m => audio.playNote(m, 400));
+    if (pressedTimer.current) clearTimeout(pressedTimer.current);
     setPressedKeys(new Set([keyId]));
-    setTimeout(() => setPressedKeys(prev => { const n = new Set(prev); n.delete(keyId); return n; }), 200);
+    pressedTimer.current = setTimeout(() => {
+      setPressedKeys(prev => prev.has(keyId) ? (prev.delete(keyId), new Set(prev)) : prev);
+    }, 200);
 
-    if (level.mode === 'guided') {
-      engine.pressKey(keyId);
-    }
+    if (level.mode === 'guided') engineRef.current.pressKey(keyId);
   }, [level.mode]);
 
-  const isWaiting = status.state === 'waiting_input';
-  const isPlaying = status.state === 'playing';
+  const isWaiting  = status.state === 'waiting_input';
+  const isPlaying  = status.state === 'playing';
   const isFinished = status.state === 'finished';
-  const isReady = status.state === 'ready';
+  const isReady    = status.state === 'ready';
+
+  // Only highlight keys when the engine is actively showing the next note to play
+  const activeKeys = (isWaiting || isPlaying) && status.currentEvent?.notes
+    ? new Set(status.currentEvent.notes.keys)
+    : new Set<string>();
 
   return (
     <div className={`${styles.player} ${wrongFlash ? styles.wrongFlash : ''}`}>
@@ -99,32 +120,25 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
         <div className={styles.modeTag}>{level.mode === 'demo' ? '演示' : '跟练'}</div>
       </div>
 
-      {/* Progress bar */}
       <div className={styles.progressBar}>
         <div className={styles.progressFill} style={{ width: `${progress}%` }} />
       </div>
 
-      {/* Lyric display */}
       <div className={styles.lyricArea}>
         <span className={styles.lyric}>{lyric || (isWaiting ? '按下高亮的键 ↓' : '')}</span>
       </div>
 
-      {/* Hint for guided mode */}
-      {isWaiting && (
-        <div className={styles.waitingHint}>等待你的按键…</div>
-      )}
+      {isWaiting && <div className={styles.waitingHint}>等待你的按键…</div>}
 
-      {/* Accordion keyboard */}
       <div className={styles.keyboard}>
         <AccordionView
           config={pianoAccordionConfig}
-          activeKeys={isWaiting || isPlaying ? (status.currentEvent?.notes ? new Set(status.currentEvent.notes.keys) : status.activeKeys) : new Set()}
+          activeKeys={activeKeys}
           pressedKeys={pressedKeys}
           onKeyPress={handleKeyPress}
         />
       </div>
 
-      {/* Controls */}
       <div className={styles.controls}>
         {(isReady || isFinished) && (
           <button className={styles.startBtn} onClick={handleStart}>

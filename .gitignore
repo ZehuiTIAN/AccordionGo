@@ -7,6 +7,9 @@ dist/
 build/
 .taro/
 
+# Generated song JSON (rebuilt by `pnpm songs` from content/songs/)
+packages/web/public/songs/*.json
+
 # Local environment
 .env
 .env.local

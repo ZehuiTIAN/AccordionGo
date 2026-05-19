@@ -2,7 +2,13 @@
   "name": "accordion-app",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter @accordion/web dev",
-    "build": "pnpm --filter @accordion/core build && pnpm --filter @accordion/web build"
+    "dev": "pnpm run songs && pnpm --filter @accordion/web dev",
+    "songs": "tsx scripts/build-songs.ts",
+    "build": "pnpm run songs && pnpm --filter @accordion/core build && pnpm --filter @accordion/web build"
+  },
+  "devDependencies": {
+    "@types/xmldom": "^0.1.34",
+    "@xmldom/xmldom": "^0.9.10",
+    "tsx": "^4.22.1"
   }
 }

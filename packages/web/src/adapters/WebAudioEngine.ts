@@ -1,3 +1,17 @@
+/**
+ * adapters/WebAudioEngine.ts
+ *
+ * AudioEngine 的浏览器实现，使用 Web Audio API。
+ *
+ * 当前音色：三角波振荡器（triangle oscillator），带 ADSR 包络，
+ * 近似手风琴音色，无需外部采样文件。
+ *
+ * 升级路径：替换为 SoundFont 采样（fetch MP3 → AudioBuffer），
+ * 接口不变，只需改此文件内部实现。
+ *
+ * 注意：AudioContext 必须在用户手势后调用 init() 才能激活（浏览器自动播放限制）。
+ */
+
 import type { AudioEngine } from '@accordion/core';
 
 function midiToFreq(midi: number): number {

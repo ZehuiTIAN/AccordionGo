@@ -1,0 +1,94 @@
+.dropZone {
+  border: 2px dashed #3a3a5c;
+  border-radius: 14px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: #111120;
+}
+
+.dropZone:hover, .dragging {
+  border-color: #7c6ff7;
+  background: #16162a;
+}
+
+.hasError {
+  border-color: #883333;
+  background: #180808;
+}
+
+.icon   { font-size: 28px; }
+
+.label  { color: #bbb; font-size: 15px; font-weight: 500; }
+
+.hint   { color: #555; font-size: 12px; }
+
+.errorMsg { color: #ff6666; font-size: 13px; text-align: center; }
+
+/* Preview state */
+.preview {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.previewTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.previewStats {
+  display: flex;
+  gap: 16px;
+  color: #888;
+  font-size: 13px;
+}
+
+.warning {
+  color: #cc9900;
+  font-size: 12px;
+  background: #1a1500;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.previewActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.confirmBtn {
+  flex: 1;
+  background: linear-gradient(135deg, #7c6ff7, #5a4fcf);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.confirmBtn:hover { opacity: 0.9; }
+
+.cancelBtn {
+  background: none;
+  color: #666;
+  border: 1px solid #333;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancelBtn:hover { color: #aaa; border-color: #555; }

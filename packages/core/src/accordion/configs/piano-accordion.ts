@@ -1,3 +1,16 @@
+/**
+ * configs/piano-accordion.ts
+ *
+ * 8贝司钢琴手风琴的默认配置（演示版）。
+ *
+ * 右手（treble）：C3–C5，共 25 键（15 白键 + 10 黑键）
+ * 左手（bass）：8 个按钮，2 列 × 4 行，Stradella 系统
+ *   - 第 0 列（外侧）：F / C / G / D 单音根音
+ *   - 第 1 列（内侧）：F / C / G / D 大三和弦（stagger 错位 30px）
+ *
+ * 换品牌时替换 visual 字段；加新琴型时新建此文件并导出新的 AccordionConfig。
+ */
+
 import type { AccordionConfig, TrebleKey, BassButton } from '../types';
 
 // C3–C5: 2 full octaves (25 keys: 15 white + 10 black)

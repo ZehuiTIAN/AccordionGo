@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import type { AccordionConfig, TrebleKey, BassButton } from '@accordion/core';
 
 interface Props {
@@ -43,13 +43,6 @@ const BASS_COL1_X = BASS_X + 138;  // chord column center X
 const BASS_TOP_Y = Math.round((CH - 3 * BTN_ROW_GAP) / 2);
 
 // ─── Geometry helpers ──────────────────────────────────────────────────────────
-function whiteKeys(config: AccordionConfig): TrebleKey[] {
-  return config.treble.keys.filter(k => k.type === 'white');
-}
-function blackKeys(config: AccordionConfig): TrebleKey[] {
-  return config.treble.keys.filter(k => k.type === 'black');
-}
-
 function whiteKeyX(key: TrebleKey): number {
   return KEYS_LEFT + key.position * WHITE_W;
 }
@@ -91,17 +84,17 @@ function drawBassPanel(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = '#111120';
   ctx.fill();
 
-  // Horizontal grille lines
+  // Horizontal grille lines — single batched path
   ctx.save();
   ctx.clip();
-  ctx.strokeStyle = 'rgba(160,160,200,0.18)';
-  ctx.lineWidth = 1;
+  ctx.beginPath();
   for (let y = 14; y < CH - 8; y += 8) {
-    ctx.beginPath();
     ctx.moveTo(BASS_X + 6, y);
     ctx.lineTo(BASS_X + BASS_W - 2, y);
-    ctx.stroke();
   }
+  ctx.strokeStyle = 'rgba(160,160,200,0.18)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
   ctx.restore();
 
   // Section label
@@ -382,8 +375,8 @@ function drawBassButton(
 // ─── Main component ────────────────────────────────────────────────────────────
 export function AccordionView({ config, activeKeys, pressedKeys = new Set(), onKeyPress }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const wk = whiteKeys(config);
-  const bk = blackKeys(config);
+  const wk = useMemo(() => config.treble.keys.filter(k => k.type === 'white'), [config]);
+  const bk = useMemo(() => config.treble.keys.filter(k => k.type === 'black'), [config]);
   const { highlightColor, pressedColor } = config.visual;
 
   const draw = useCallback(() => {
