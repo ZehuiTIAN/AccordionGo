@@ -95,13 +95,19 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
     engineRef.current.start();
   }, []);
 
-  const handleKeyPress = useCallback((keyId: string, midis: number[]) => {
+  const handleKeyPress = useCallback(async (keyId: string, midis: number[]) => {
+    await audioRef.current.init();
     midis.forEach(m => audioRef.current.playNote(m, 400));
 
     if (pressedTimer.current) clearTimeout(pressedTimer.current);
     setPressedKeys(new Set([keyId]));
     pressedTimer.current = setTimeout(() => {
-      setPressedKeys(prev => prev.has(keyId) ? (prev.delete(keyId), new Set(prev)) : prev);
+      setPressedKeys(prev => {
+        if (!prev.has(keyId)) return prev;
+        const next = new Set(prev);
+        next.delete(keyId);
+        return next;
+      });
     }, 200);
 
     if (level.mode === 'guided') engineRef.current.pressKey(keyId);
@@ -132,8 +138,6 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
       <div className={styles.lyricArea}>
         <span className={styles.lyric}>{lyric || (isWaiting ? '按下高亮的键 ↓' : '')}</span>
       </div>
-
-      {isWaiting && <div className={styles.waitingHint}>等待你的按键…</div>}
 
       <div className={styles.keyboard}>
         <div className={styles.viewToggleRow}>
