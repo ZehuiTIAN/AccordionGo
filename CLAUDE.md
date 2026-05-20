@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ Commit message rule — enforced by git hook
+
+> **The commit title line MUST be 100% English. No Chinese characters allowed, ever.**
+> A git hook will reject the commit automatically if the title contains Chinese.
+> Body text may be in Chinese. Only the first line (title) is restricted.
+
 ## Commands
 
 ```bash

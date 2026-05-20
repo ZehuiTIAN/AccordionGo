@@ -7,8 +7,13 @@
  * Canvas width is fixed at 760px; height = numWhiteKeys × 32px (scales with config).
  *
  * Supports both the 8-bass demo config (15 white keys, 2-col legacy layout) and the
- * 41-key 120-bass config (24 white keys, 6-col grid layout) via dynamic geometry
+ * 41-key 120-bass config (24 white keys, 6-col parallelogram layout) via dynamic geometry
  * computed from AccordionConfig.
+ *
+ * Bass layout for 120-bass: the 6 columns are arranged as a parallelogram (sheared grid).
+ * Column 0 (outermost/counterbass, leftmost) has no y-offset; each column to the right
+ * shifts down by a uniform stepPerCol ≈ 0.4 × rowSpacing. The result is a diagonal tilt
+ * across the entire bass section — not a brick-wall alternating stagger.
  *
  * `mirrored` prop applies CSS scaleX(-1) for 演奏者视角. Text is counter-transformed
  * so glyphs stay readable in both orientations.
@@ -46,6 +51,7 @@ const KEY_X     = TREBLE_X + 6;  // left edge of keyboard
 // Legacy 2-col bass constants
 const BASS_COL0_X  = BASS_X + 143;  // 单音/bass (inner)
 const BASS_COL1_X  = BASS_X + 68;   // 和弦/chord (outer)
+const BASS_EDGE_CLIP = 4;            // skip buttons whose center is within this many px of panel edge
 const BTN_STAGGER  = 30;
 const BTN_ROW_GAP  = 65;
 const LEGACY_BTN_R = 21;
@@ -77,18 +83,24 @@ function computeBassLayout(config: AccordionConfig, CH: number): BassLayout {
   }
 
   // Grid layout: 6-col (120-bass)
-  // Odd columns are staggered down by half a row — matches real Stradella diagonal layout
+  // Each column is offset by a constant stepPerCol relative to the previous column.
+  // This produces a parallelogram: the outer column (col 0, left) sits highest, and each
+  // successive column shifts down uniformly, so the entire bass section is a sheared grid
+  // rather than a brick-wall. Buttons whose center falls outside the panel are skipped at
+  // draw time. stepPerCol ≈ 0.4 × rowSpacing gives a clearly visible diagonal without
+  // clipping too many edge buttons.
   const colSpacing = BASS_W / (bassCols + 1);
-  const HEADER_H   = 20;
-  const rowSpacing = (CH - HEADER_H) / bassRows;
-  const stagger    = rowSpacing * 0.5;
+  const HEADER_H   = 24;
+  const availH     = CH - HEADER_H - 8;
+  const rowSpacing = availH / bassRows;
+  const stepPerCol = rowSpacing * 0.4;   // uniform shift per column → parallelogram
   const BTN_R = Math.floor(Math.min(colSpacing * 0.43, rowSpacing * 0.43));
 
   return {
     BTN_R,
     colXs: Array.from({ length: bassCols }, (_, i) => BASS_X + colSpacing * (i + 1)),
     rowYs: Array.from({ length: bassRows }, (_, i) => HEADER_H + rowSpacing * 0.5 + i * rowSpacing),
-    colYOffsets: Array.from({ length: bassCols }, (_, i) => (i % 2 === 1 ? stagger : 0)),
+    colYOffsets: Array.from({ length: bassCols }, (_, i) => i * stepPerCol),
     headerY: HEADER_H * 0.5 + 3,
   };
 }
@@ -580,9 +592,10 @@ export function AccordionView({
     // Bass column headers
     drawBassColHeaders(ctx, bassLayout, mirrored);
 
-    // Bass buttons
+    // Bass buttons — skip any whose center falls outside the panel (parallelogram edge clipping)
     config.bass.buttons.forEach(btn => {
       const { x, y } = bassButtonPos(btn, bassLayout);
+      if (y < BASS_EDGE_CLIP || y > CH - BASS_EDGE_CLIP) return;
       drawBassButton(ctx, btn, x, y, bassLayout.BTN_R, activeKeys.has(btn.id), pressedKeys.has(btn.id), highlightColor, pressedColor, mirrored);
     });
   }, [activeKeys, pressedKeys, config, wk, bk, numWK, CH, highlightColor, pressedColor, mirrored, bassLayout, staticBg]);
@@ -616,15 +629,16 @@ export function AccordionView({
         return;
       }
     }
-    // Bass buttons
+    // Bass buttons — skip any outside the panel (parallelogram edge clipping)
     for (const btn of config.bass.buttons) {
       const { x, y } = bassButtonPos(btn, bassLayout);
+      if (y < BASS_EDGE_CLIP || y > CH - BASS_EDGE_CLIP) continue;
       if (Math.hypot(cx - x, cy - y) <= bassLayout.BTN_R + 4) {
         onKeyPress(btn.id, btn.midi);
         return;
       }
     }
-  }, [onKeyPress, bk, wk, config.bass.buttons, config.bass.cols, numWK, bassLayout, mirrored]);
+  }, [onKeyPress, bk, wk, config.bass.buttons, numWK, bassLayout, mirrored]);
 
   return (
     <canvas
