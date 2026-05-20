@@ -29,19 +29,19 @@ interface Props {
 // ─── Fixed canvas/section dimensions ──────────────────────────────────────────
 const CW        = 760;
 const WK_H      = 32;   // white key slot height (px); CH = numWhiteKeys × WK_H
-const WK_W      = 264;  // white key depth
+const WK_W      = 342;  // white key depth (fills treble panel)
 const BK_H      = 21;   // black key height
-const BK_W      = 164;  // black key depth
+const BK_W      = 210;  // black key depth
 const BODY_R    = 18;
 
 const BASS_X    = 0;
 const BASS_W    = 220;
 
 const BELLOWS_X = BASS_X + BASS_W;
-const BELLOWS_W = 116;
+const BELLOWS_W = 152;  // wider bellows for realistic proportion
 
 const TREBLE_X  = BELLOWS_X + BELLOWS_W;
-const KEY_X     = TREBLE_X + 8;  // left edge of keyboard
+const KEY_X     = TREBLE_X + 6;  // left edge of keyboard
 
 // Legacy 2-col bass constants
 const BASS_COL0_X  = BASS_X + 143;  // 单音/bass (inner)
@@ -55,6 +55,8 @@ interface BassLayout {
   BTN_R: number;
   colXs: number[];
   rowYs: number[];
+  /** per-column y stagger — creates the characteristic diagonal button arrangement */
+  colYOffsets: number[];
   /** y offset for column header labels (top of panel) */
   headerY: number;
 }
@@ -63,40 +65,39 @@ function computeBassLayout(config: AccordionConfig, CH: number): BassLayout {
   const { rows: bassRows, cols: bassCols } = config.bass;
 
   if (bassCols === 2) {
+    // 2-col: chord column (outer, col 1) is staggered up by BTN_STAGGER
     const topY = Math.round((CH - (bassRows - 1) * BTN_ROW_GAP) / 2);
     return {
       BTN_R: LEGACY_BTN_R,
       colXs: [BASS_COL0_X, BASS_COL1_X],
       rowYs: Array.from({ length: bassRows }, (_, i) => topY + i * BTN_ROW_GAP),
+      colYOffsets: [0, -BTN_STAGGER],
       headerY: topY - LEGACY_BTN_R - 14,
     };
   }
 
   // Grid layout: 6-col (120-bass)
+  // Odd columns are staggered down by half a row — matches real Stradella diagonal layout
   const colSpacing = BASS_W / (bassCols + 1);
   const HEADER_H   = 20;
   const rowSpacing = (CH - HEADER_H) / bassRows;
+  const stagger    = rowSpacing * 0.5;
   const BTN_R = Math.floor(Math.min(colSpacing * 0.43, rowSpacing * 0.43));
 
   return {
     BTN_R,
     colXs: Array.from({ length: bassCols }, (_, i) => BASS_X + colSpacing * (i + 1)),
     rowYs: Array.from({ length: bassRows }, (_, i) => HEADER_H + rowSpacing * 0.5 + i * rowSpacing),
+    colYOffsets: Array.from({ length: bassCols }, (_, i) => (i % 2 === 1 ? stagger : 0)),
     headerY: HEADER_H * 0.5 + 3,
   };
-}
-
-// 2-col legacy layout staggers chord col (col 1) upward to mirror real accordion feel
-function staggerOffset(bassCols: number, colIndex: number): number {
-  return bassCols === 2 && colIndex === 1 ? -BTN_STAGGER : 0;
 }
 
 function bassButtonPos(
   btn: BassButton,
   layout: BassLayout,
-  bassCols: number,
 ): { x: number; y: number } {
-  return { x: layout.colXs[btn.col], y: layout.rowYs[btn.row] + staggerOffset(bassCols, btn.col) };
+  return { x: layout.colXs[btn.col], y: layout.rowYs[btn.row] + layout.colYOffsets[btn.col] };
 }
 
 // ─── Key geometry ──────────────────────────────────────────────────────────────
@@ -392,21 +393,19 @@ const COL_LABELS_6 = ['反', '根', '大', '小', '七', '减'];
 function drawBassColHeaders(
   ctx: CanvasRenderingContext2D,
   layout: BassLayout,
-  bassCols: number,
   mirrored: boolean,
 ) {
-  const labels = bassCols === 2 ? COL_LABELS_2 : COL_LABELS_6;
+  const labels = layout.colXs.length === 2 ? COL_LABELS_2 : COL_LABELS_6;
   ctx.fillStyle = 'rgba(180,180,230,0.35)';
   ctx.font = '9px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // For 2-col, only draw if there's room above the first row
-  if (bassCols === 2 && layout.headerY < 8) return;
+  if (layout.colXs.length === 2 && layout.headerY < 8) return;
 
   layout.colXs.forEach((cx, i) => {
     if (i >= labels.length) return;
-    fillTextSafe(ctx, labels[i], cx, layout.headerY + staggerOffset(bassCols, i), mirrored);
+    fillTextSafe(ctx, labels[i], cx, layout.headerY + layout.colYOffsets[i], mirrored);
   });
   ctx.textBaseline = 'alphabetic';
 }
@@ -579,11 +578,11 @@ export function AccordionView({
     bk.forEach(key => drawBlackKey(ctx, key, numWK, activeKeys.has(key.id), pressedKeys.has(key.id), highlightColor, pressedColor));
 
     // Bass column headers
-    drawBassColHeaders(ctx, bassLayout, config.bass.cols, mirrored);
+    drawBassColHeaders(ctx, bassLayout, mirrored);
 
     // Bass buttons
     config.bass.buttons.forEach(btn => {
-      const { x, y } = bassButtonPos(btn, bassLayout, config.bass.cols);
+      const { x, y } = bassButtonPos(btn, bassLayout);
       drawBassButton(ctx, btn, x, y, bassLayout.BTN_R, activeKeys.has(btn.id), pressedKeys.has(btn.id), highlightColor, pressedColor, mirrored);
     });
   }, [activeKeys, pressedKeys, config, wk, bk, numWK, CH, highlightColor, pressedColor, mirrored, bassLayout, staticBg]);
@@ -619,7 +618,7 @@ export function AccordionView({
     }
     // Bass buttons
     for (const btn of config.bass.buttons) {
-      const { x, y } = bassButtonPos(btn, bassLayout, config.bass.cols);
+      const { x, y } = bassButtonPos(btn, bassLayout);
       if (Math.hypot(cx - x, cy - y) <= bassLayout.BTN_R + 4) {
         onKeyPress(btn.id, btn.midi);
         return;
