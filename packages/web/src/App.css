@@ -45,7 +45,7 @@ body {
     rgba(255,255,255,0.02) 19px, rgba(255,255,255,0.02) 20px
   );
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
 /* ── Floating music notes ──────────────────────────────────────────────────── */
@@ -150,7 +150,7 @@ body {
 
 .sectionTitle::before {
   content: '♩';
-  font-family: serif;
+  font-family: var(--font-serif);
   font-size: 16px;
   color: #2c2c2c;
   letter-spacing: 0;

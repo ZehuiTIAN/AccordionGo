@@ -8,6 +8,10 @@
  *   2. XML 导入曲目：useSongs hook 从 /songs/manifest.json 加载，
  *      由 scripts/build-songs.ts 在构建时从 content/songs/ 生成
  *   3. 运行时上传：XMLImport 组件处理（适合开发/测试用）
+ *
+ * Hero 区包含两个纯装饰元素（aria-hidden）：
+ *   - noteDecor：四个浮动音符符号，CSS 动画驱动
+ *   - pianoAccent：CSS 多层背景绘制的迷你八键琴键条
  */
 
 import { useState } from 'react';

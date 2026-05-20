@@ -96,7 +96,7 @@ If you add a new accordion model, create a new config file in `packages/core/src
 Title in English (`feat:` / `fix:` / `refactor:` / `style:` prefix), body in Chinese, both concise.
 
 ```
-feat: add piano-key UI theme
+style: add piano-key UI theme
 
 - 首页卡片改为象牙色钢琴白键风格，按钮区分黑键/白键
 - 英雄区加入迷你琴键装饰、飘动音符和五线谱背景
