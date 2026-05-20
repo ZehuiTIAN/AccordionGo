@@ -93,7 +93,7 @@ If you add a new accordion model, create a new config file in `packages/core/src
 
 ## Commit messages
 
-Title in English (`feat:` / `fix:` / `refactor:` / `style:` prefix), body in Chinese, both concise.
+**Title must be fully in English** (`feat:` / `fix:` / `refactor:` / `style:` prefix). Body in Chinese. Both concise. Never put Chinese in the title line.
 
 ```
 style: add piano-key UI theme
