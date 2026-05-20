@@ -4,12 +4,13 @@
  * 关卡播放页。持有 LessonEngine 和 WebAudioEngine 实例，将引擎回调桥接到 React state。
  *
  * 状态：
- *   status      — 来自 LessonEngine 的引擎状态（当前事件、高亮键等）
- *   pressedKeys — 用户实际触发或演示模式自动触发的按键视觉反馈（短暂高亮）
- *   wrongFlash  — 答错时全屏红闪
- *   lyric       — 当前事件的歌词
- *   progress    — 进度条百分比（0–100）
- *   mirrored    — 手风琴视角切换（演奏者视角 / 观众视角）
+ *   status         — 来自 LessonEngine 的引擎状态（当前事件、高亮键等）
+ *   pressedKeys    — 用户实际触发或演示模式自动触发的按键视觉反馈（短暂高亮）
+ *   wrongFlash     — 答错时全屏红闪
+ *   lyric          — 当前事件的歌词
+ *   progress       — 进度条百分比（0–100）
+ *   mirrored       — 手风琴视角切换（演奏者视角 / 观众视角）
+ *   accordionConfig — 当前选中的琴型（8贝司 / 41键120贝司），可实时切换
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -17,7 +18,8 @@ import type { Level, EngineStatus } from '@accordion/core';
 import { LessonEngine } from '@accordion/core';
 import { AccordionView } from '../AccordionView';
 import { WebAudioEngine } from '../../adapters/WebAudioEngine';
-import { pianoAccordionConfig } from '@accordion/core';
+import { pianoAccordionConfig, pianoAccordion120BassConfig } from '@accordion/core';
+import type { AccordionConfig } from '@accordion/core';
 import styles from './LessonPlayer.module.css';
 
 interface Props {
@@ -43,6 +45,7 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
   const [progress, setProgress] = useState(0);
   const [wrongFlash, setWrongFlash] = useState(false);
   const [mirrored, setMirrored] = useState(false);
+  const [accordionConfig, setAccordionConfig] = useState<AccordionConfig>(pianoAccordionConfig);
 
   useEffect(() => {
     const engine = engineRef.current;
@@ -134,6 +137,20 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
 
       <div className={styles.keyboard}>
         <div className={styles.viewToggleRow}>
+          <div className={styles.modelSwitcher}>
+            <button
+              className={`${styles.modelBtn} ${accordionConfig === pianoAccordionConfig ? styles.modelBtnActive : ''}`}
+              onClick={() => setAccordionConfig(pianoAccordionConfig)}
+            >
+              8贝司
+            </button>
+            <button
+              className={`${styles.modelBtn} ${accordionConfig === pianoAccordion120BassConfig ? styles.modelBtnActive : ''}`}
+              onClick={() => setAccordionConfig(pianoAccordion120BassConfig)}
+            >
+              41键/120贝司
+            </button>
+          </div>
           <button
             className={styles.viewToggleBtn}
             onClick={() => setMirrored(m => !m)}
@@ -142,7 +159,7 @@ export function LessonPlayer({ level, onBack, onFinish }: Props) {
           </button>
         </div>
         <AccordionView
-          config={pianoAccordionConfig}
+          config={accordionConfig}
           activeKeys={activeKeys}
           pressedKeys={pressedKeys}
           onKeyPress={handleKeyPress}

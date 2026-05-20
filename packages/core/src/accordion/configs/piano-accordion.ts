@@ -12,46 +12,8 @@
  * 换品牌时替换 visual 字段；加新琴型时新建此文件并导出新的 AccordionConfig。
  */
 
-import type { AccordionConfig, TrebleKey, BassButton } from '../types';
-
-// C3–C5: 2 full octaves (25 keys: 15 white + 10 black)
-function buildTrebleKeys(): TrebleKey[] {
-  const semitones = [
-    { name: 'C',  type: 'white' },
-    { name: 'C#', type: 'black' },
-    { name: 'D',  type: 'white' },
-    { name: 'D#', type: 'black' },
-    { name: 'E',  type: 'white' },
-    { name: 'F',  type: 'white' },
-    { name: 'F#', type: 'black' },
-    { name: 'G',  type: 'white' },
-    { name: 'G#', type: 'black' },
-    { name: 'A',  type: 'white' },
-    { name: 'A#', type: 'black' },
-    { name: 'B',  type: 'white' },
-  ] as const;
-
-  const keys: TrebleKey[] = [];
-  let whitePos = 0;
-
-  for (let oct = 3; oct <= 5; oct++) {
-    const count = oct === 5 ? 1 : 12; // only C5 from octave 5
-    for (let i = 0; i < count; i++) {
-      const { name, type } = semitones[i];
-      const midi = 48 + (oct - 3) * 12 + i; // C3 = MIDI 48
-      keys.push({
-        id: `${name}${oct}`,
-        midi,
-        type,
-        position: type === 'white' ? whitePos : whitePos - 1,
-        octave: oct,
-        noteName: name,
-      });
-      if (type === 'white') whitePos++;
-    }
-  }
-  return keys;
-}
+import type { AccordionConfig, BassButton } from '../types';
+import { buildPianoKeysRange } from './utils';
 
 // 8-bass Stradella: 2 cols (bass notes + major chords) × 4 rows (D, G, C, F)
 // Top→bottom: D(2 sharps) → G(1 sharp) → C(no accidentals) → F(1 flat)
@@ -95,7 +57,7 @@ export const pianoAccordionConfig: AccordionConfig = {
   name: '钢琴手风琴 8贝司（演示版）',
   type: 'piano',
   treble: {
-    keys: buildTrebleKeys(),
+    keys: buildPianoKeysRange(48, 72), // C3 (MIDI 48) to C5 (MIDI 72): 25 keys
     layout: 'piano',
   },
   bass: {

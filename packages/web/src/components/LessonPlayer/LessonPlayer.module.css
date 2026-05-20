@@ -108,7 +108,8 @@
 
 .viewToggleRow {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
   max-width: 760px;
 }
@@ -125,6 +126,29 @@
   transition: color 0.15s, border-color 0.15s;
 }
 .viewToggleBtn:hover { border-color: #444; color: #aaa; }
+
+.modelSwitcher {
+  display: flex;
+  gap: 4px;
+}
+
+.modelBtn {
+  background: none;
+  border: 1px solid #1a1a1a;
+  color: #3a3a3a;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.modelBtn:hover { border-color: #444; color: #aaa; }
+.modelBtnActive {
+  background: #181818;
+  border-color: #555;
+  color: #ccc;
+}
 
 /* ── Controls ──────────────────────────────────────────────────────────────── */
 
