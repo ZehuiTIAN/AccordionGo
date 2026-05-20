@@ -1,94 +1,94 @@
 .dropZone {
-  border: 2px dashed #3a3a5c;
-  border-radius: 14px;
-  padding: 24px 20px;
+  border: 1px solid #1e1e1e;
+  border-radius: 10px;
+  padding: 28px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
-  background: #111120;
+  background: #0e0e0e;
 }
 
 .dropZone:hover, .dragging {
-  border-color: #7c6ff7;
-  background: #16162a;
+  border-color: #383838;
+  background: #141414;
 }
 
 .hasError {
-  border-color: #883333;
-  background: #180808;
+  border-color: #3a1212;
+  background: #0f0808;
 }
 
-.icon   { font-size: 28px; }
+.icon     { font-size: 26px; opacity: 0.35; }
+.label    { color: #666; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; }
+.hint     { color: #2e2e2e; font-size: 11px; letter-spacing: 1px; }
+.errorMsg { color: #bb4444; font-size: 13px; text-align: center; }
 
-.label  { color: #bbb; font-size: 15px; font-weight: 500; }
-
-.hint   { color: #555; font-size: 12px; }
-
-.errorMsg { color: #ff6666; font-size: 13px; text-align: center; }
-
-/* Preview state */
+/* Preview — piano white-key card */
 .preview {
-  background: #1a1a2e;
-  border: 1px solid #2a2a4a;
-  border-radius: 14px;
+  background: var(--piano-card-bg);
+  border-radius: var(--piano-card-radius);
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: var(--piano-card-shadow);
+  color: #1a1a1a;
 }
 
 .previewTitle {
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.2px;
 }
 
-.previewStats {
-  display: flex;
-  gap: 16px;
-  color: #888;
-  font-size: 13px;
-}
+.previewStats { display: flex; gap: 16px; color: #777; font-size: 12px; }
 
 .warning {
-  color: #cc9900;
+  color: #7a5200;
   font-size: 12px;
-  background: #1a1500;
+  background: rgba(0,0,0,0.07);
   padding: 4px 10px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-.previewActions {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-}
+.previewActions { display: flex; gap: 10px; margin-top: 4px; }
 
+/* White key — confirm */
 .confirmBtn {
   flex: 1;
-  background: linear-gradient(135deg, #7c6ff7, #5a4fcf);
-  color: #fff;
-  border: none;
+  background: linear-gradient(180deg, #ffffff 0%, #f0ece0 100%);
+  color: #111;
+  border: 1px solid #d8d4c8;
   padding: 12px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: bold;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 3px 0 #aaa;
+  transition: transform 0.08s ease;
 }
+.confirmBtn:hover  { transform: translateY(-1px); }
+.confirmBtn:active { transform: translateY(2px); box-shadow: none; }
 
-.confirmBtn:hover { opacity: 0.9; }
-
+/* Black key — cancel */
 .cancelBtn {
-  background: none;
-  color: #666;
-  border: 1px solid #333;
+  background: linear-gradient(180deg, #222 0%, #121212 100%);
+  color: #888;
+  border: none;
   padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 3px 0 #000;
+  transition: transform 0.08s ease, color 0.15s;
 }
-
-.cancelBtn:hover { color: #aaa; border-color: #555; }
+.cancelBtn:hover  { color: #ccc; transform: translateY(-1px); }
+.cancelBtn:active { transform: translateY(2px); box-shadow: none; }

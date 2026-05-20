@@ -46,9 +46,13 @@ export function App() {
   return (
     <div className="home">
       <div className="hero">
+        <div className="noteDecor" aria-hidden="true">
+          <span>♩</span><span>♫</span><span>♪</span><span>♬</span>
+        </div>
         <div className="logo">🪗</div>
         <h1 className="appName">AccordionGo</h1>
         <p className="tagline">10 分钟学会一首歌，零基础也能演奏手风琴</p>
+        <div className="pianoAccent" aria-hidden="true" />
       </div>
 
       {/* Built-in courses */}
@@ -99,7 +103,7 @@ export function App() {
         </div>
       )}
 
-      <footer className="footer">MVP Demo · Phase 1</footer>
+      <footer className="footer">♩ MVP Demo · Phase 1</footer>
     </div>
   );
 }

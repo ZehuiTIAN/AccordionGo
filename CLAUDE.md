@@ -91,6 +91,18 @@ If you add a new accordion model, create a new config file in `packages/core/src
 
 `AccordionView` renders entirely on a single `<canvas>` (760×320). Layout is divided into three hard-coded sections: bass panel (left), bellows (center), treble keyboard (right). All pixel constants are at the top of the file. Hit-testing in `handlePointer` mirrors the draw geometry — if you change a draw constant, update the corresponding hit-test geometry.
 
+## Commit messages
+
+Title in English (`feat:` / `fix:` / `refactor:` / `style:` prefix), body in Chinese, both concise.
+
+```
+feat: add piano-key UI theme
+
+- 首页卡片改为象牙色钢琴白键风格，按钮区分黑键/白键
+- 英雄区加入迷你琴键装饰、飘动音符和五线谱背景
+- 引入 Cormorant Garamond（标题）和 Inter（正文）字体
+```
+
 ### Future: WeChat mini-program
 
 The plan is to add `packages/miniprogram/` as a Taro 3 package that imports `@accordion/core` directly and provides WeChat-specific adapters. The web package remains for development and H5 deployment. Do **not** consolidate them — they are intentionally separate build targets.

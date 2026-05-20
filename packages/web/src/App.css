@@ -1,9 +1,16 @@
+:root {
+  --font-serif: 'Cormorant Garamond', 'Georgia', serif;
+  --piano-card-bg: linear-gradient(170deg, #f5f1e8 0%, #ece8da 100%);
+  --piano-card-shadow: 0 3px 0 #000, 0 6px 18px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.9);
+  --piano-card-radius: 3px 3px 10px 10px;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: #0f0f1a;
-  color: #fff;
+  font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #0a0a0a;
+  color: #f0ece2;
   min-height: 100vh;
 }
 
@@ -13,145 +20,251 @@ body {
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 36px;
 }
+
+/* ── Hero ──────────────────────────────────────────────────────────────────── */
 
 .hero {
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  padding: 28px 0 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    transparent 0, transparent 19px,
+    rgba(255,255,255,0.02) 19px, rgba(255,255,255,0.02) 20px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Floating music notes ──────────────────────────────────────────────────── */
+
+.noteDecor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noteDecor span {
+  position: absolute;
+  font-family: serif;
+  color: rgba(255,255,255,0.055);
+  line-height: 1;
+  animation: noteDrift 11s ease-in-out infinite;
+}
+
+.noteDecor span:nth-child(1) { font-size: 54px; top: 8%;     left: 4%;   animation-delay: 0s;    }
+.noteDecor span:nth-child(2) { font-size: 70px; top: 6%;     right: 3%;  animation-delay: -3.5s; }
+.noteDecor span:nth-child(3) { font-size: 46px; bottom: 24%; left: 3%;   animation-delay: -6s;   }
+.noteDecor span:nth-child(4) { font-size: 62px; bottom: 20%; right: 4%;  animation-delay: -8.5s; }
+
+@keyframes noteDrift {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%       { transform: translateY(-10px) rotate(4deg); }
 }
 
 .logo {
   font-size: 64px;
   animation: float 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50%       { transform: translateY(-8px); }
 }
 
 .appName {
-  font-size: 36px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #7c6ff7, #FFD700);
+  font-family: var(--font-serif);
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0e8d0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  position: relative;
+  z-index: 1;
 }
 
 .tagline {
-  color: #888;
-  font-size: 15px;
-  line-height: 1.5;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
 }
+
+/* ── Mini piano keystrip decoration ───────────────────────────────────────── */
+
+.pianoAccent {
+  /* content-box so width = exact inner area for gradient math */
+  box-sizing: content-box;
+  width: 210px;
+  height: 44px;
+  border-radius: 0 0 5px 5px;
+  border: 1px solid #1e1e1e;
+  border-top: none;
+  opacity: 0.42;
+  position: relative;
+  z-index: 1;
+  background:
+    /* 5 black keys: C# D# F# G# A# */
+    linear-gradient(to bottom, #161616 65%, transparent 65%)  21px 0 / 18px 100% no-repeat,
+    linear-gradient(to bottom, #161616 65%, transparent 65%)  51px 0 / 18px 100% no-repeat,
+    linear-gradient(to bottom, #161616 65%, transparent 65%) 111px 0 / 18px 100% no-repeat,
+    linear-gradient(to bottom, #161616 65%, transparent 65%) 141px 0 / 18px 100% no-repeat,
+    linear-gradient(to bottom, #161616 65%, transparent 65%) 171px 0 / 18px 100% no-repeat,
+    repeating-linear-gradient(90deg, #e8e4da 0, #e8e4da 28px, #252525 28px, #252525 30px);
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────────── */
+
+.courseSection { display: flex; flex-direction: column; }
 
 .sectionTitle {
-  font-size: 18px;
-  color: #ccc;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: #3a3a3a;
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
+
+.sectionTitle::before {
+  content: '♩';
+  font-family: serif;
+  font-size: 16px;
+  color: #2c2c2c;
+  letter-spacing: 0;
+  text-transform: none;
+  flex: none;
+  margin-right: 10px;
+}
+
+.sectionTitle::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #1e1e1e, transparent);
+  margin-left: 12px;
+}
+
+/* ── Course card — piano white-key style ───────────────────────────────────── */
 
 .courseCard {
-  background: #1a1a2e;
-  border: 1px solid #2a2a4a;
-  border-radius: 16px;
-  padding: 20px;
+  background: var(--piano-card-bg);
+  border-radius: var(--piano-card-radius);
+  padding: 22px 20px 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  box-shadow: var(--piano-card-shadow);
+  color: #1a1a1a;
 }
 
-.courseDifficulty { color: #FFD700; font-size: 14px; }
+.courseCard + .courseCard { margin-top: 10px; }
+
+.courseInfo { display: flex; flex-direction: column; gap: 4px; }
+
+.courseDifficulty { color: #9a8a60; font-size: 11px; letter-spacing: 3px; }
 
 .courseTitle {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 4px 0;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
 }
 
-.courseDesc { color: #888; font-size: 14px; }
+.courseDesc { color: #777; font-size: 12px; letter-spacing: 0.2px; }
 
-.levelButtons {
-  display: flex;
-  gap: 12px;
-}
+/* ── Level buttons ─────────────────────────────────────────────────────────── */
+
+.levelButtons { display: flex; gap: 10px; }
 
 .levelBtn {
   flex: 1;
-  padding: 12px;
+  padding: 11px 14px;
   border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: bold;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.1s;
+  letter-spacing: 0.5px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
-.levelBtn:hover { transform: translateY(-2px); }
-.levelBtn:active { transform: translateY(0); opacity: 0.8; }
+.levelBtn:active { transform: translateY(3px) !important; box-shadow: none !important; }
 
+/* Black key — demo */
 .levelBtn.demo {
-  background: linear-gradient(135deg, #2a2a4a, #3a3a6a);
-  color: #9988ff;
-  border: 1px solid #4a4a8a;
+  background: linear-gradient(180deg, #242424 0%, #141414 100%);
+  color: #c8c4b8;
+  box-shadow: 0 4px 0 #000, 0 5px 12px rgba(0,0,0,0.55);
+}
+.levelBtn.demo:hover {
+  background: linear-gradient(180deg, #2e2e2e 0%, #1e1e1e 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 #000, 0 8px 16px rgba(0,0,0,0.6);
 }
 
+/* White key — guided */
 .levelBtn.guided {
-  background: linear-gradient(135deg, #7c6ff7, #5a4fcf);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(124, 111, 247, 0.3);
+  background: linear-gradient(180deg, #ffffff 0%, #f0ece0 100%);
+  color: #111;
+  border: 1px solid #d8d4c8;
+  box-shadow: 0 4px 0 #aaa, 0 5px 12px rgba(0,0,0,0.2);
+}
+.levelBtn.guided:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f4e8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 #aaa, 0 8px 18px rgba(0,0,0,0.25);
 }
 
-.comingSoon {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.comingSoonCard {
-  background: #111122;
-  border: 1px dashed #2a2a4a;
-  border-radius: 12px;
-  padding: 14px 20px;
-  color: #555;
-  font-size: 15px;
-}
-
-.comingSoonCard span {
-  float: right;
-  font-size: 12px;
-  background: #1a1a2e;
-  padding: 2px 8px;
-  border-radius: 10px;
-  color: #666;
-}
+/* ── Misc ──────────────────────────────────────────────────────────────────── */
 
 .importHint {
-  color: #444;
+  color: #3a3a3a;
   font-size: 12px;
   text-align: center;
-  margin-top: 8px;
+  margin-top: 10px;
+  line-height: 1.7;
 }
 
-.importedBadge {
-  display: inline-block;
-  margin-left: 8px;
-  background: #2a2a4a;
-  color: #7c6ff7;
+.importHint code {
+  background: #141414;
+  color: #666;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: monospace;
   font-size: 11px;
-  font-weight: normal;
-  padding: 1px 7px;
-  border-radius: 10px;
-  vertical-align: middle;
 }
 
 .footer {
   text-align: center;
-  color: #333;
-  font-size: 12px;
+  color: #222;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding-top: 12px;
+  border-top: 1px solid #141414;
 }

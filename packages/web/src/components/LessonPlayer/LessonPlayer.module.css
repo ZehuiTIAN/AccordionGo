@@ -4,60 +4,67 @@
   gap: 16px;
   padding: 20px;
   min-height: 100vh;
-  background: #0f0f1a;
-  transition: background 0.1s;
+  background: #0a0a0a;
+  transition: background 0.15s;
 }
 
-.wrongFlash {
-  background: #2a0a0a;
-}
+.wrongFlash { background: #180505; }
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+/* ── Header ────────────────────────────────────────────────────────────────── */
+
+.header { display: flex; align-items: center; gap: 12px; }
 
 .backBtn {
   background: none;
-  border: 1px solid #444;
-  color: #aaa;
-  padding: 6px 12px;
-  border-radius: 8px;
+  border: 1px solid #1e1e1e;
+  color: #555;
+  padding: 7px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  transition: border-color 0.15s, color 0.15s;
 }
-
-.backBtn:hover { border-color: #888; color: #fff; }
+.backBtn:hover { border-color: #555; color: #ddd; }
 
 .title {
   flex: 1;
   margin: 0;
-  font-size: 20px;
-  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: #f0ece2;
+  letter-spacing: 0.3px;
 }
 
 .modeTag {
-  background: #2a2a4a;
-  color: #9988ff;
-  padding: 4px 10px;
+  background: #111;
+  color: #444;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  border: 1px solid #1e1e1e;
 }
 
+/* ── Progress ──────────────────────────────────────────────────────────────── */
+
 .progressBar {
-  height: 4px;
-  background: #2a2a4a;
-  border-radius: 2px;
+  height: 2px;
+  background: #181818;
+  border-radius: 1px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #7c6ff7, #FFD700);
-  border-radius: 2px;
+  background: #f0ece2;
+  border-radius: 1px;
   transition: width 0.3s ease;
 }
+
+/* ── Lyric ─────────────────────────────────────────────────────────────────── */
 
 .lyricArea {
   text-align: center;
@@ -68,23 +75,28 @@
 }
 
 .lyric {
-  font-size: 36px;
-  font-weight: bold;
-  color: #FFD700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  font-family: var(--font-serif);
+  font-size: 38px;
+  font-weight: 600;
+  color: #f0ece2;
+  letter-spacing: 1.5px;
 }
 
 .waitingHint {
   text-align: center;
-  color: #7c6ff7;
-  font-size: 14px;
-  animation: pulse 1s ease-in-out infinite;
+  color: #333;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.25; }
 }
+
+/* ── Keyboard area ─────────────────────────────────────────────────────────── */
 
 .keyboard {
   display: flex;
@@ -103,50 +115,62 @@
 
 .viewToggleBtn {
   background: none;
-  border: 1px solid #444;
-  color: #888;
+  border: 1px solid #1a1a1a;
+  color: #3a3a3a;
   padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
+.viewToggleBtn:hover { border-color: #444; color: #aaa; }
 
-.viewToggleBtn:hover { border-color: #888; color: #ccc; }
+/* ── Controls ──────────────────────────────────────────────────────────────── */
 
 .controls {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   padding: 8px 0;
 }
 
+/* White key — start / replay */
 .startBtn {
-  background: linear-gradient(135deg, #7c6ff7, #5a4fcf);
-  color: #fff;
-  border: none;
-  padding: 14px 40px;
-  border-radius: 30px;
-  font-size: 18px;
-  font-weight: bold;
+  background: linear-gradient(180deg, #ffffff 0%, #f0ece0 100%);
+  color: #111;
+  border: 1px solid #d8d4c8;
+  padding: 14px 44px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(124, 111, 247, 0.4);
-  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.5px;
+  box-shadow: 0 5px 0 #aaa, 0 8px 22px rgba(0,0,0,0.3);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
-
 .startBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(124, 111, 247, 0.6);
+  box-shadow: 0 7px 0 #aaa, 0 12px 28px rgba(0,0,0,0.35);
+}
+.startBtn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #aaa, 0 2px 8px rgba(0,0,0,0.2);
 }
 
+/* Black key — stop */
 .stopBtn {
-  background: none;
-  color: #888;
-  border: 1px solid #444;
+  background: linear-gradient(180deg, #222 0%, #121212 100%);
+  color: #666;
+  border: none;
   padding: 12px 28px;
-  border-radius: 30px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 0 #000, 0 6px 14px rgba(0,0,0,0.5);
+  transition: transform 0.08s ease, color 0.15s;
 }
-
-.stopBtn:hover { border-color: #888; color: #fff; }
+.stopBtn:hover { color: #ccc; transform: translateY(-1px); }
+.stopBtn:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
