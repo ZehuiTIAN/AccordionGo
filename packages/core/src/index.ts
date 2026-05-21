@@ -11,6 +11,7 @@
  */
 
 export * from './accordion/types';
+export * from './accordion/theory/circle-of-fifths';
 export * from './accordion/configs/piano-accordion';
 export * from './accordion/configs/piano-accordion-120bass';
 export * from './lesson/types';

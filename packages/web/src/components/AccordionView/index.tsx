@@ -10,10 +10,12 @@
  * 41-key 120-bass config (24 white keys, 6-col parallelogram layout) via dynamic geometry
  * computed from AccordionConfig.
  *
- * Bass layout for 120-bass: the 6 columns are arranged as a parallelogram (sheared grid).
- * Column 0 (outermost/counterbass, leftmost) has no y-offset; each column to the right
- * shifts down by a uniform stepPerCol ≈ 0.4 × rowSpacing. The result is a diagonal tilt
- * across the entire bass section — not a brick-wall alternating stagger.
+ * Bass layout for 120-bass: 6 columns in Stradella order. Col 0 (counterbass) is
+ * rightmost (closest to bellows); col 5 (diminished) is leftmost (outer edge).
+ * 内侧低外侧高: inner columns (counterbass, bass) sit LOWER on the panel (larger
+ * y-offset) and outer columns (diminished) sit HIGHER — matching real accordion
+ * geometry where the inner rows tilt toward the belly/grille side. This produces
+ * a "\" diagonal. Tactile markers: C (primary), G#/Ab and E (secondary); see TACTILE_MARKER_ROOTS.
  *
  * `mirrored` prop applies CSS scaleX(-1) for 演奏者视角. Text is counter-transformed
  * so glyphs stay readable in both orientations.
@@ -22,6 +24,7 @@
  */
 import { useRef, useEffect, useCallback, useMemo } from 'react';
 import type { AccordionConfig, TrebleKey, BassButton } from '@accordion/core';
+import { TACTILE_MARKER_ROOTS } from '@accordion/core';
 
 interface Props {
   config: AccordionConfig;
@@ -83,24 +86,27 @@ function computeBassLayout(config: AccordionConfig, CH: number): BassLayout {
   }
 
   // Grid layout: 6-col (120-bass)
-  // Each column is offset by a constant stepPerCol relative to the previous column.
-  // This produces a parallelogram: the outer column (col 0, left) sits highest, and each
-  // successive column shifts down uniformly, so the entire bass section is a sheared grid
-  // rather than a brick-wall. Buttons whose center falls outside the panel are skipped at
-  // draw time. stepPerCol ≈ 0.4 × rowSpacing gives a clearly visible diagonal without
-  // clipping too many edge buttons.
+  // Col 0 (counterbass) is rightmost — closest to the bellows (innermost row on real accordion).
+  // Col 5 (diminished) is leftmost — outermost edge.
+  // 内侧低外侧高: inner columns (counterbass, bass) sit LOWER on the panel; outer columns
+  // (diminished, dom7) sit HIGHER. colYOffsets are therefore LARGEST for col 0 and ZERO for
+  // col 5, producing a "\" diagonal.
+  // rowSpacing is shrunk so that the bottom row of col 0 (max y-offset) never exits the panel:
+  //   last_y = HEADER_H + (bassRows - 0.5 + (bassCols-1)*0.4) * rowSpacing ≤ availH+HEADER_H
   const colSpacing = BASS_W / (bassCols + 1);
   const HEADER_H   = 24;
   const availH     = CH - HEADER_H - 8;
-  const rowSpacing = availH / bassRows;
-  const stepPerCol = rowSpacing * 0.4;   // uniform shift per column → parallelogram
+  const rowSpacing = availH / (bassRows + (bassCols - 1) * 0.4);
+  const stepPerCol = rowSpacing * 0.4;
   const BTN_R = Math.floor(Math.min(colSpacing * 0.43, rowSpacing * 0.43));
 
   return {
     BTN_R,
-    colXs: Array.from({ length: bassCols }, (_, i) => BASS_X + colSpacing * (i + 1)),
+    // col 0 → rightmost (closest to bellows), col (bassCols-1) → leftmost
+    colXs: Array.from({ length: bassCols }, (_, i) => BASS_X + colSpacing * (bassCols - i)),
     rowYs: Array.from({ length: bassRows }, (_, i) => HEADER_H + rowSpacing * 0.5 + i * rowSpacing),
-    colYOffsets: Array.from({ length: bassCols }, (_, i) => i * stepPerCol),
+    // Inner (col 0) = lowest on panel (most y-offset); outer (col 5) = highest (no offset)
+    colYOffsets: Array.from({ length: bassCols }, (_, i) => (bassCols - 1 - i) * stepPerCol),
     headerY: HEADER_H * 0.5 + 3,
   };
 }
@@ -417,7 +423,8 @@ function drawBassColHeaders(
 
   layout.colXs.forEach((cx, i) => {
     if (i >= labels.length) return;
-    fillTextSafe(ctx, labels[i], cx, layout.headerY + layout.colYOffsets[i], mirrored);
+    // All headers at the same Y — no diagonal offset, avoids overlapping button area.
+    fillTextSafe(ctx, labels[i], cx, layout.headerY, mirrored);
   });
   ctx.textBaseline = 'alphabetic';
 }
@@ -519,11 +526,11 @@ function drawBassButton(
 
   ctx.textBaseline = 'alphabetic';
 
-  // C-key tactile dot
-  if (btn.rootNote === 'C' && !active && !pressed && BTN_R >= 10) {
+  if (!active && !pressed && BTN_R >= 10 && TACTILE_MARKER_ROOTS.has(btn.rootNote)) {
+    const primary = btn.rootNote === 'C';
     ctx.beginPath();
-    ctx.arc(x, y - BTN_R * 0.3, BTN_R * 0.14, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.38)';
+    ctx.arc(x, y - BTN_R * 0.3, BTN_R * (primary ? 0.15 : 0.09), 0, Math.PI * 2);
+    ctx.fillStyle = primary ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.28)';
     ctx.fill();
   }
 }

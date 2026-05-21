@@ -4,108 +4,59 @@
  * 41键 120贝司钢琴手风琴标准配置。
  *
  * 右手（treble）：F3–A6，共 41 键（24 白键 + 17 黑键）
- * 左手（bass）：120 个按钮，20 行 × 6 列，标准 Stradella 系统
- *   - 20 行按五度圈排列（从外到内）：
- *     Bb, Eb, Ab, Db, Gb, B, E, A, D, G, C, F（外半区，低音区）
- *     Bb, Eb, Ab, Db, Gb, B, E, A（内半区，高音区）
- *   - 6 列（col 0→5，从最外侧到最内侧）：
- *     反低音(counterbass), 低音(bass), 大三和弦, 小三和弦, 属七, 减七
- *
- * 五度圈顺序从外到内，符合中国手风琴教学惯例（降号调在最外侧）。
+ * 左手（bass）：120 个按钮，20 行（五度圈）× 6 列（和弦类型），标准 Stradella 系统
+ *   - 20 行从上（肩部）到下（腹部）按升四度方向排列，起点 pos 10（A#/Bb），逐行降五度：
+ *     外区 12 行（低音寄存器，row 0–11）：变化音用升号 A#, D#, G#, C#, F#…
+ *     内区  8 行（高音寄存器，row 12–19）：变化音用降号 Bb, Eb, Ab, Db, F#…
+ *   - 触感标记：C（主，row 10）；G#/Ab（次，row 2/14）；E（次，row 6）
+ *   - 6 列（col 0→5，从最内侧→最外侧，靠近风箱→远离风箱）：
+ *     对位低音(counterbass), 根音(bass), 大三和弦, 小三和弦, 属七, 减七
+ *   - 对位低音 = 根音上方大三度（+4 半音）；按钮显示对位音名，不是根音名
+ *   - 行/列排列、音名和对位低音均由 buildStradellaRows（circle-of-fifths.ts）统一派生
  */
 
 import type { AccordionConfig, BassButton } from '../types';
 import { buildPianoKeysRange } from './utils';
+import { buildStradellaRows } from '../theory/circle-of-fifths';
 
-// 20 note positions in circle-of-fifths order (outer edge = lowest register)
-// Outer 12: cycle of 5ths Bb→Eb→Ab→...→F (descending flat side then ascending sharp side)
-// Inner 8:  same cycle continued (Bb→Eb→Ab→...→A) in higher register
-const NOTE_ROWS: { note: string; bassMidi: number }[] = [
-  { note: 'Bb', bassMidi: 34 },  // Bb1 – outermost
-  { note: 'Eb', bassMidi: 39 },  // Eb2
-  { note: 'Ab', bassMidi: 44 },  // Ab2
-  { note: 'Db', bassMidi: 37 },  // Db2
-  { note: 'Gb', bassMidi: 42 },  // Gb2
-  { note: 'B',  bassMidi: 35 },  // B1
-  { note: 'E',  bassMidi: 40 },  // E2
-  { note: 'A',  bassMidi: 45 },  // A2
-  { note: 'D',  bassMidi: 38 },  // D2
-  { note: 'G',  bassMidi: 43 },  // G2
-  { note: 'C',  bassMidi: 48 },  // C3
-  { note: 'F',  bassMidi: 41 },  // F2
-  { note: 'Bb', bassMidi: 46 },  // Bb2 – inner section starts
-  { note: 'Eb', bassMidi: 51 },  // Eb3
-  { note: 'Ab', bassMidi: 56 },  // Ab3
-  { note: 'Db', bassMidi: 49 },  // Db3
-  { note: 'Gb', bassMidi: 54 },  // Gb3
-  { note: 'B',  bassMidi: 47 },  // B2
-  { note: 'E',  bassMidi: 52 },  // E3
-  { note: 'A',  bassMidi: 57 },  // A3 – innermost
+const OUTER_ROWS = buildStradellaRows(10, 12, 'sharp');
+const INNER_ROWS = buildStradellaRows(10,  8, 'flat', 12);
+const ALL_ROWS   = [...OUTER_ROWS, ...INNER_ROWS];
+
+// Column definitions: button type, intervals from the column's base note,
+// and which base note to use (cbMidi, bassMidi, or root = bassMidi-12).
+const COL_DEFS: Array<{
+  type: BassButton['type'];
+  base: 'cb' | 'bass' | 'root';
+  offsets: number[];
+  labelKey: 'cb' | 'note';
+}> = [
+  { type: 'counterbass', base: 'cb',   offsets: [0],          labelKey: 'cb'   },
+  { type: 'bass',        base: 'bass',  offsets: [0],          labelKey: 'note' },
+  { type: 'major',       base: 'root',  offsets: [0, 4, 7],    labelKey: 'note' },
+  { type: 'minor',       base: 'root',  offsets: [0, 3, 7],    labelKey: 'note' },
+  { type: 'dominant7',   base: 'root',  offsets: [0, 4, 7, 10],labelKey: 'note' },
+  { type: 'diminished',  base: 'root',  offsets: [0, 3, 6, 9], labelKey: 'note' },
 ];
 
 function buildBassButtons120(): BassButton[] {
   const buttons: BassButton[] = [];
 
-  NOTE_ROWS.forEach(({ note, bassMidi }, row) => {
-    // Stradella counterbass = major 6th above the bass note (9 semitones up)
-    const cbMidi = bassMidi + 9;
+  ALL_ROWS.forEach(({ note, bassMidi, cb }, row) => {
+    const cbMidi = bassMidi + 4;
+    const root   = bassMidi - 12;
+    const baseNotes = { cb: cbMidi, bass: bassMidi, root };
 
-    // Chord notes built from one octave below bass note
-    const root = bassMidi - 12;
-
-    buttons.push({
-      id: `${note}${row}-counterbass`,
-      midi: [cbMidi],
-      row,
-      col: 0,
-      label: note,
-      type: 'counterbass',
-      rootNote: note,
-    });
-    buttons.push({
-      id: `${note}${row}-bass`,
-      midi: [bassMidi],
-      row,
-      col: 1,
-      label: note,
-      type: 'bass',
-      rootNote: note,
-    });
-    buttons.push({
-      id: `${note}${row}-major`,
-      midi: [root, root + 4, root + 7],
-      row,
-      col: 2,
-      label: note,
-      type: 'major',
-      rootNote: note,
-    });
-    buttons.push({
-      id: `${note}${row}-minor`,
-      midi: [root, root + 3, root + 7],
-      row,
-      col: 3,
-      label: note,
-      type: 'minor',
-      rootNote: note,
-    });
-    buttons.push({
-      id: `${note}${row}-dominant7`,
-      midi: [root, root + 4, root + 7, root + 10],
-      row,
-      col: 4,
-      label: note,
-      type: 'dominant7',
-      rootNote: note,
-    });
-    buttons.push({
-      id: `${note}${row}-diminished`,
-      midi: [root, root + 3, root + 6, root + 9],
-      row,
-      col: 5,
-      label: note,
-      type: 'diminished',
-      rootNote: note,
+    COL_DEFS.forEach(({ type, base, offsets, labelKey }, col) => {
+      const baseNote = baseNotes[base];
+      buttons.push({
+        id:       `${note}${row}-${type}`,
+        midi:     offsets.map(o => baseNote + o),
+        row, col,
+        label:    labelKey === 'cb' ? cb : note,
+        type,
+        rootNote: note,
+      });
     });
   });
 
