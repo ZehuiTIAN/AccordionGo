@@ -5,11 +5,14 @@
  * accordions (e.g. Roland FR-7x).
  *
  * Palette summary:
- *   Body    — deep piano-black gloss with diagonal specular streaks
- *   Bellows — black leather folds, silver ridge highlights, chrome binding
+ *   Body    — dark charcoal gloss with diagonal specular streaks
+ *   Bellows — dark gray leather folds, silver ridge highlights, chrome binding
  *   Keys    — pure ivory white keys, near-black black keys
  *   Buttons — black pearl radial gradient with chrome ring
- *   Trim    — silver-chrome borders (replaces gold on "natural" instruments)
+ *   Trim    — silver-chrome borders
+ *
+ * Section values are ordered brightest→darkest (bellows > body > treble > bass panel)
+ * to maintain visible contrast separation from the dark page background.
  */
 import type { AccordionTheme } from '../theme';
 
@@ -18,76 +21,76 @@ export const classicBlackTheme: AccordionTheme = {
 
   body: {
     gradient: [
-      [0,    '#2e2e2e'],
-      [0.25, '#1a1a1a'],
-      [0.6,  '#0e0e0e'],
-      [1,    '#080808'],
+      [0,    '#404040'],
+      [0.25, '#282828'],
+      [0.6,  '#181818'],
+      [1,    '#101010'],
     ],
     grainStyle: 'gloss',
     grainColor: '#ffffff',
-    grainAlpha: 0.045,
+    grainAlpha: 0.06,
     border: [
-      [0,   '#d0d0d0'],
-      [0.3, '#909090'],
-      [0.7, '#888888'],
-      [1,   '#b0b0b0'],
+      [0,   '#d8d8d8'],
+      [0.3, '#a0a0a0'],
+      [0.7, '#909090'],
+      [1,   '#c0c0c0'],
     ],
   },
 
   bassPanel: {
     gradient: [
-      [0, '#0a0a0a'],
-      [1, '#050505'],
+      [0, '#202020'],
+      [1, '#141414'],
     ],
-    gridColor:   'rgba(255,255,255,0.04)',
-    grilleColor: 'rgba(255,255,255,0.07)',
+    gridColor:   'rgba(255,255,255,0.07)',
+    grilleColor: 'rgba(255,255,255,0.13)',
   },
 
   bellows: {
     litFace: [
-      [0,   '#343434'],
-      [0.5, '#222222'],
-      [1,   '#141414'],
+      [0,   '#585858'],
+      [0.5, '#383838'],
+      [1,   '#242424'],
     ],
     shadowFace: [
-      [0,   '#0d0d0d'],
-      [0.6, '#070707'],
-      [1,   '#030303'],
+      [0,   '#1a1a1a'],
+      [0.6, '#101010'],
+      [1,   '#080808'],
     ],
-    ridgePrimary:   'rgba(210,210,210,0.72)',
-    ridgeSecondary: 'rgba(155,155,155,0.45)',
-    valleyColor:    'rgba(0,0,0,0.88)',
+    ridgePrimary:   'rgba(220,220,220,0.80)',
+    ridgeSecondary: 'rgba(160,160,160,0.52)',
+    valleyColor:    'rgba(0,0,0,0.90)',
     edgeBind: [
-      [0,   '#2a2a2a'],
-      [0.4, '#1c1c1c'],
-      [1,   '#0a0a0a'],
+      [0,   '#383838'],
+      [0.4, '#282828'],
+      [1,   '#141414'],
     ],
     cornerPatch: [
-      [0,   '#999999'],
-      [0.4, '#dddddd'],
-      [1,   '#666666'],
+      [0,   '#aaaaaa'],
+      [0.4, '#e8e8e8'],
+      [1,   '#777777'],
     ],
     border: [
-      [0,   '#cccccc'],
-      [0.5, '#888888'],
-      [1,   '#aaaaaa'],
+      [0,   '#d8d8d8'],
+      [0.5, '#909090'],
+      [1,   '#b8b8b8'],
     ],
   },
 
   treble: {
     housing: [
-      [0,   '#1e1e1e'],
-      [0.3, '#141414'],
-      [1,   '#0a0a0a'],
+      [0,   '#303030'],
+      [0.3, '#202020'],
+      [1,   '#141414'],
     ],
     frame: [
-      [0,    '#3a3a3a'],
-      [0.08, '#555555'],
-      [0.5,  '#404040'],
-      [0.92, '#555555'],
-      [1,    '#3a3a3a'],
+      [0,    '#484848'],
+      [0.08, '#686868'],
+      [0.5,  '#505050'],
+      [0.92, '#686868'],
+      [1,    '#484848'],
     ],
-    frameHighlight: 'rgba(220,220,220,0.3)',
+    frameHighlight: 'rgba(230,230,230,0.35)',
   },
 
   keys: {

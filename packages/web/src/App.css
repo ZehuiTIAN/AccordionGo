@@ -42,7 +42,7 @@ body {
   inset: 0;
   background-image: repeating-linear-gradient(
     transparent 0, transparent 19px,
-    rgba(255,255,255,0.02) 19px, rgba(255,255,255,0.02) 20px
+    rgba(255,255,255,0.07) 19px, rgba(255,255,255,0.07) 20px
   );
   pointer-events: none;
   z-index: -1;
@@ -60,7 +60,7 @@ body {
 .noteDecor span {
   position: absolute;
   font-family: serif;
-  color: rgba(255,255,255,0.055);
+  color: rgba(255,255,255,0.18);
   line-height: 1;
   animation: noteDrift 11s ease-in-out infinite;
 }
