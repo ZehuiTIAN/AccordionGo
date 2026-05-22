@@ -5,6 +5,8 @@
  *
  * Layout: bass panel (left, 220px) | bellows (center, 152px) | treble keyboard (right).
  * Canvas width is fixed at 760px; height = numWhiteKeys × 32px (scales with config).
+ * Treble keyboard: low notes (position=0) render at the top, high notes at the bottom —
+ * matching the visual convention of a real piano accordion viewed from the front.
  *
  * Visual theming: all colours and gradient stops live in an AccordionTheme object
  * (see ./theme.ts).  Pass a `theme` prop to switch skins; omit it to use the default
@@ -134,12 +136,12 @@ function bassButtonPos(btn: BassButton, layout: BassLayout): { x: number; y: num
 }
 
 // ─── Key geometry ──────────────────────────────────────────────────────────────
-function whiteKeyY(key: TrebleKey, numWK: number): number {
-  return (numWK - 1 - key.position) * WK_H;
+function whiteKeyY(key: TrebleKey): number {
+  return key.position * WK_H;
 }
 
-function blackKeyY(key: TrebleKey, numWK: number): number {
-  return (numWK - 1 - key.position) * WK_H - BK_H / 2;
+function blackKeyY(key: TrebleKey): number {
+  return key.position * WK_H + WK_H - BK_H / 2;
 }
 
 // ─── Text helper ───────────────────────────────────────────────────────────────
@@ -472,14 +474,13 @@ function drawKeyboardAOShadow(ctx: CanvasRenderingContext2D, CH: number) {
 function drawWhiteKey(
   ctx: CanvasRenderingContext2D,
   key: TrebleKey,
-  numWK: number,
   active: boolean,
   pressed: boolean,
   highlightColor: string,
   pressedColor: string,
   t: AccordionTheme,
 ) {
-  const y = whiteKeyY(key, numWK);
+  const y = whiteKeyY(key);
 
   ctx.beginPath();
   ctx.roundRect(KEY_X, y + 0.5, WK_W, WK_H - 1, [0, 5, 5, 0]);
@@ -544,14 +545,13 @@ function drawWhiteKey(
 function drawBlackKey(
   ctx: CanvasRenderingContext2D,
   key: TrebleKey,
-  numWK: number,
   active: boolean,
   pressed: boolean,
   highlightColor: string,
   pressedColor: string,
   t: AccordionTheme,
 ) {
-  const y = blackKeyY(key, numWK);
+  const y = blackKeyY(key);
 
   ctx.beginPath();
   ctx.roundRect(KEY_X, y, BK_W, BK_H, [0, 4, 4, 0]);
@@ -817,7 +817,7 @@ export function AccordionView({
     drawBassPanelLabel(ctx, CH, mirrored, theme);
 
     wk.forEach(key => drawWhiteKey(
-      ctx, key, numWK,
+      ctx, key,
       activeKeys.has(key.id), pressedKeys.has(key.id),
       highlightColor, pressedColor, theme,
     ));
@@ -826,7 +826,7 @@ export function AccordionView({
     ctx.strokeStyle = 'rgba(0,0,0,0.18)';
     ctx.lineWidth = 1;
     wk.forEach(key => {
-      const y = whiteKeyY(key, numWK);
+      const y = whiteKeyY(key);
       ctx.beginPath();
       ctx.moveTo(KEY_X + 2, y + WK_H - 0.5);
       ctx.lineTo(KEY_X + WK_W - 4, y + WK_H - 0.5);
@@ -834,7 +834,7 @@ export function AccordionView({
     });
 
     bk.forEach(key => drawBlackKey(
-      ctx, key, numWK,
+      ctx, key,
       activeKeys.has(key.id), pressedKeys.has(key.id),
       highlightColor, pressedColor, theme,
     ));
@@ -854,7 +854,7 @@ export function AccordionView({
         highlightColor, pressedColor, mirrored, theme,
       );
     });
-  }, [activeKeys, pressedKeys, config, wk, bk, numWK, CH, highlightColor, pressedColor, mirrored, bassLayout, staticBg, theme]);
+  }, [activeKeys, pressedKeys, config, wk, bk, CH, highlightColor, pressedColor, mirrored, bassLayout, staticBg, theme]);
 
   useEffect(() => { draw(); }, [draw]);
 
@@ -871,14 +871,14 @@ export function AccordionView({
 
     // Black keys first (they overlap white key slots)
     for (const key of bk) {
-      const y = blackKeyY(key, numWK);
+      const y = blackKeyY(key);
       if (cx >= KEY_X && cx <= KEY_X + BK_W && cy >= y && cy <= y + BK_H) {
         onKeyPress(key.id, [key.midi]);
         return;
       }
     }
     for (const key of wk) {
-      const y = whiteKeyY(key, numWK);
+      const y = whiteKeyY(key);
       if (cx >= KEY_X && cx <= KEY_X + WK_W && cy >= y && cy <= y + WK_H) {
         onKeyPress(key.id, [key.midi]);
         return;
