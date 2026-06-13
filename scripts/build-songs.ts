@@ -26,6 +26,13 @@ const ROOT      = fileURLToPath(new URL('..', import.meta.url));
 const SONGS_DIR = join(ROOT, 'content/songs');
 const OUT_DIR   = join(ROOT, 'packages/web/public/songs');
 
+/** 简单稳定的字符串哈希（djb2），用于非拉丁文件名的 slug 兜底。 */
+function shortHash(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
 async function processFile(file: string): Promise<SongMeta | null> {
   const xmlPath = join(SONGS_DIR, file);
   try {
@@ -35,8 +42,10 @@ async function processFile(file: string): Promise<SongMeta | null> {
 
     const { course, warnings, stats } = parseMusicXML(doc);
 
-    // Stable slug from filename (not title, to avoid ID drift on rename)
-    const slug = slugify(basename(file, extname(file)));
+    // Stable slug from filename (not title, to avoid ID drift on rename).
+    // 非拉丁文件名（如「说再见」）slug 为空 → 用文件名哈希兜底，保证稳定且非空。
+    const base = basename(file, extname(file));
+    const slug = slugify(base) || `song-${shortHash(base)}`;
     course.id = slug;
     course.levels.forEach((l, i) => { l.id = `${slug}-${i === 0 ? 'demo' : 'guided'}`; });
 

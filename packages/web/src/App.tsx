@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import type { Course, Level } from '@accordion/core';
+import type { Course } from '@accordion/core';
 import { LessonPlayer } from './components/LessonPlayer';
 import { XMLImport } from './components/XMLImport';
 import { useSongs } from './hooks/useSongs';
@@ -26,25 +26,25 @@ type Screen = 'home' | 'play';
 
 export function App() {
   const [screen, setScreen]   = useState<Screen>('home');
-  const [activeLevel, setActiveLevel] = useState<Level | null>(null);
+  const [activeCourse, setActiveCourse] = useState<Course | null>(null);
   const [runtimeCourses, setRuntimeCourses] = useState<Course[]>([]);
 
   const { songs, loading: songsLoading, error: songsError, loadCourse } = useSongs();
 
-  const startLevel = (level: Level) => { setActiveLevel(level); setScreen('play'); };
+  const startCourse = (course: Course) => { setActiveCourse(course); setScreen('play'); };
 
   const handleStartSong = async (meta: Parameters<typeof loadCourse>[0]) => {
     try {
       const course = await loadCourse(meta);
-      startLevel(course.levels[0]);
+      startCourse(course);
     } catch (e) {
       console.error(e);
       alert(`加载曲目失败：${e instanceof Error ? e.message : '未知错误'}`);
     }
   };
 
-  if (screen === 'play' && activeLevel) {
-    return <LessonPlayer level={activeLevel} onBack={() => setScreen('home')} />;
+  if (screen === 'play' && activeCourse) {
+    return <LessonPlayer course={activeCourse} onBack={() => setScreen('home')} />;
   }
 
   return (
@@ -62,7 +62,7 @@ export function App() {
       {/* Built-in courses */}
       <div className="courseSection">
         <h2 className="sectionTitle">内置曲目</h2>
-        <CourseCard course={twinkleStar} onStart={startLevel} />
+        <CourseCard course={twinkleStar} onStart={startCourse} />
       </div>
 
       {/* Songs from content/songs/ (built by scripts/build-songs.ts) */}
@@ -82,7 +82,7 @@ export function App() {
                   <p className="courseDesc">{meta.totalNotes} 个音符 · 约 {Math.round(meta.durationSec)}秒</p>
                 </div>
                 <div className="levelButtons">
-                  <button className="levelBtn demo" onClick={() => handleStartSong(meta)}>▶ 演示</button>
+                  <button className="levelBtn demo" onClick={() => handleStartSong(meta)}>▶ 打开练习</button>
                 </div>
               </div>
             ))
@@ -102,7 +102,7 @@ export function App() {
       {runtimeCourses.length > 0 && (
         <div className="courseSection">
           {runtimeCourses.map(course => (
-            <CourseCard key={course.id} course={course} onStart={startLevel} />
+            <CourseCard key={course.id} course={course} onStart={startCourse} />
           ))}
         </div>
       )}
@@ -112,7 +112,7 @@ export function App() {
   );
 }
 
-function CourseCard({ course, onStart }: { course: Course; onStart: (l: Level) => void }) {
+function CourseCard({ course, onStart }: { course: Course; onStart: (c: Course) => void }) {
   const stars = '★'.repeat(course.difficulty) + '☆'.repeat(5 - course.difficulty);
   return (
     <div className="courseCard">
@@ -121,11 +121,7 @@ function CourseCard({ course, onStart }: { course: Course; onStart: (l: Level) =
         <h3 className="courseTitle">{course.title}</h3>
       </div>
       <div className="levelButtons">
-        {course.levels.map(level => (
-          <button key={level.id} className={`levelBtn ${level.mode}`} onClick={() => onStart(level)}>
-            {level.mode === 'demo' ? '▶ 演示' : '✋ 跟练'}
-          </button>
-        ))}
+        <button className="levelBtn demo" onClick={() => onStart(course)}>▶ 打开练习</button>
       </div>
     </div>
   );

@@ -93,6 +93,8 @@ export const twinkleStar: Course = {
   title: '小星星',
   author: 'AccordionGo',
   difficulty: 1,
+  // 纯右手、音域 C4–C5，两种琴型都能演奏
+  supportedConfigs: ['piano-8-bass-demo', 'piano-41-key-120-bass'],
   levels: [
     {
       id: 'twinkle-demo',

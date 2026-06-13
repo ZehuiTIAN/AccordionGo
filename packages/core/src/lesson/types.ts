@@ -14,6 +14,8 @@
  * EngineState / EngineStatus 由 LessonEngine 维护并广播给 UI。
  */
 
+import type { BassButton } from '../accordion/types';
+
 export type LessonMode = 'demo' | 'guided' | 'freeplay';
 
 export type LessonEventType = 'note' | 'chord' | 'hint' | 'lyric';
@@ -23,6 +25,12 @@ export interface NoteSpec {
   keys: string[];       // key ids from AccordionConfig
   midi: number[];
   duration: number;     // ms
+  /**
+   * 左手专用：与琴型无关的贝斯目标。
+   * 解析时填入根音音级 + 和弦类型，运行时按当前选中的 AccordionConfig
+   * 解析成具体的 bass button id（写入 keys）。右手事件留空。
+   */
+  bass?: { rootPc: number; type: BassButton['type'] };
 }
 
 export interface LessonEvent {
@@ -46,6 +54,11 @@ export interface Course {
   title: string;
   author: string;
   difficulty: 1 | 2 | 3 | 4 | 5;
+  /**
+   * 本曲可演奏的琴型 id 列表（对应 @accordion/core 中 KNOWN_CONFIGS 的 AccordionConfig.id）。
+   * 解析时根据音域 + 所需贝斯和弦判定；UI 琴型下拉据此过滤。
+   */
+  supportedConfigs?: string[];
   levels: Level[];
 }
 
@@ -65,4 +78,10 @@ export interface EngineStatus {
   currentEventIndex: number;
   currentEvent: LessonEvent | null;
   activeKeys: Set<string>;  // currently highlighted keys
+  /**
+   * guided 双手模式：当前时间步（同一 time 的事件集合）期望按下的所有键，
+   * 以及当前步中已经正确按下的键。用于双手同时判定与高亮。
+   */
+  stepExpectedKeys: Set<string>;
+  stepPressedKeys: Set<string>;
 }
