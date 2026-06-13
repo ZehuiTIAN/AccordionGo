@@ -13,8 +13,9 @@
 
 import type { Course } from '@accordion/core';
 
-// 切换到后端时改这一行即可
-const BASE_URL = '/songs';
+// 切换到后端时改这一行即可。
+// 用 import.meta.env.BASE_URL 兼容 vite base（如 '/AccordionGo/'），dev 与生产构建都对。
+const BASE_URL = `${import.meta.env.BASE_URL}songs`;
 
 export interface SongMeta {
   id: string;
